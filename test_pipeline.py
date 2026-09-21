@@ -21,3 +21,19 @@ def test_deduplication_logic():
         pcoll = p | beam.Create(input_data)
         result = pcoll | beam.ParDo(DeduplicateDoFn())
         assert_that(result, equal_to(expected_output))
+
+
+def test_unique_events_pass_through():
+    """Valida que eventos unicos sin duplicados pasen intactos."""
+    input_data = [
+        ("EV300", [{"event_id": "EV300", "action": "click"}])
+    ]
+
+    expected_output = [
+        {"event_id": "EV300", "action": "click"}
+    ]
+
+    with TestPipeline() as p:
+        pcoll = p | beam.Create(input_data)
+        result = pcoll | beam.ParDo(DeduplicateDoFn())
+        assert_that(result, equal_to(expected_output))
